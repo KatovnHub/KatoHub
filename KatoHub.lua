@@ -14,27 +14,27 @@ local Window = Rayfield:CreateWindow({
 -- ================== SCRIPT LẺ (Universal) ==================
 local LeTab = Window:CreateTab("Script Lẻ", 4483362458)
 
-LeTab:CreateSection("🎯 FPS Games (Arsenal, CBRO, Phantom Forces...)")
+LeTab:CreateSection("🎯 FPS / Combat")
 LeTab:CreateButton({
     Name = "🔫 Aim + ESP (KatovnHub)",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/KatovnHub/Universal-Roblox-Aim-ESP/main/script.lua"))()
-        Rayfield:Notify({Title = "Loaded", Content = "Aim + ESP Loaded!", Duration = 4})
     end
 })
 
 LeTab:CreateButton({
-    Name = "🎯 Silent Aim",
+    Name = "MTC V1.5 - Thermal ESP (Xuyên Xe)",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Universal/Silent%20Aim.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/KatovnHub/MTC/main/MTC_V1.5.lua"))() -- Bạn có thể thay link sau
+        Rayfield:Notify({Title = "MTC V1.5", Content = "Thermal ESP Loaded!", Duration = 5})
     end
 })
 
 LeTab:CreateSection("⚡ Movement")
 LeTab:CreateButton({
-    Name = "🕊 Fly GUI",
+    Name = "🕊 Fly GUI V3",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/0Ben1/fe/main/Fly%20GUI"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
     end
 })
 
@@ -45,15 +45,14 @@ LeTab:CreateButton({
     end
 })
 
-LeTab:CreateSection("👁 Visual")
+LeTab:CreateSection("🔧 Utility")
 LeTab:CreateButton({
-    Name = "ESP Full",
+    Name = "The Button",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Babyhamsta/Rbx_Scripts/main/Esp.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Bac0nHck/Scripts/refs/heads/main/TheButton.lua"))()
     end
 })
 
-LeTab:CreateSection("🔧 Utility")
 LeTab:CreateButton({
     Name = "Dex Explorer",
     Callback = function()
@@ -61,15 +60,23 @@ LeTab:CreateButton({
     end
 })
 
--- ================== SCRIPT GAME (Từng Game Cụ Thể) ==================
+-- ================== SCRIPT GAME (Từng Game) ==================
 local GameTab = Window:CreateTab("Script Game", 4483362458)
+
+GameTab:CreateSection("🚔 Notoriety")
+GameTab:CreateButton({
+    Name = "Notoriety Full Script (Fling + ESP + Flight)",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/KatovnHub/Notoriety/main/Notoriety.lua"))() -- Bạn có thể thay
+        Rayfield:Notify({Title = "Notoriety", Content = "Full Script Loaded!", Duration = 5})
+    end
+})
 
 GameTab:CreateSection("🥷 Blox Fruits")
 GameTab:CreateButton({
-    Name = "Blox Fruits Script (Auto Farm, etc)",
+    Name = "Blox Fruits Script",
     Callback = function()
-        -- Thêm link script Blox Fruits bạn hay dùng
-        Rayfield:Notify({Title = "Info", Content = "Chưa có script Blox Fruits, gửi link mình thêm", Duration = 5})
+        loadstring(game:HttpGet("https://orbitsc.net/bfnf"))()
     end
 })
 
@@ -77,23 +84,23 @@ GameTab:CreateSection("⚔️ The Strongest Battlegrounds (TSB)")
 GameTab:CreateButton({
     Name = "TSB Script",
     Callback = function()
-        Rayfield:Notify({Title = "Info", Content = "Gửi link TSB script bạn muốn thêm", Duration = 5})
+        Rayfield:Notify({Title = "TSB", Content = "Chưa có script, gửi link mình thêm", Duration = 5})
     end
 })
 
-GameTab:CreateSection("👊 Anime Phantom / AniPho")
+GameTab:CreateSection("👊 AniPho / Anime Games")
 GameTab:CreateButton({
     Name = "AniPho Script",
     Callback = function()
-        Rayfield:Notify({Title = "Info", Content = "Gửi link AniPho script bạn muốn thêm", Duration = 5})
+        Rayfield:Notify({Title = "AniPho", Content = "Gửi link script mình sẽ thêm", Duration = 5})
     end
 })
 
 GameTab:CreateSection("Khác")
 GameTab:CreateButton({
-    Name = "Thêm Game Mới",
+    Name = "➕ Thêm Game Mới",
     Callback = function()
-        Rayfield:Notify({Title = "Hướng dẫn", Content = "Gửi tên game + link script mình sẽ thêm ngay", Duration = 6})
+        Rayfield:Notify({Title = "Hướng dẫn", Content = "Gửi tên game + link script mình thêm ngay", Duration = 6})
     end
 })
 
@@ -113,6 +120,6 @@ InfoTab:CreateButton({
 
 Rayfield:Notify({
     Title = "KatoHub",
-    Content = "Load thành công!\nScript Lẻ = Universal theo thể loại\nScript Game = Script riêng từng game",
+    Content = "Load thành công!\nScript Lẻ = Universal\nScript Game = Script riêng từng game",
     Duration = 7
 })
