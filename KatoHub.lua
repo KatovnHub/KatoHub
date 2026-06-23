@@ -106,7 +106,7 @@ GameTab:CreateButton({
 
 GameTab:CreateSection("👊 AniPhobia")
 GameTab:CreateButton({
-    Name = "♾️ Infinite Ammo + No Recoil (V7)",
+    Name = "♾️ Menu AniPhobia (V1)",
     Callback = function()
         pcall(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/KatovnHub/KatoHub/main/INF%20Ammo%20AniPhobia"))()
