@@ -1,0 +1,167 @@
+--[[
+    AniPhobia Infinite Ammo - v7 (Based on Original - Fixed & Clean)
+]]
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+local Settings = {
+    Enabled = false,
+    AmmoAmount = math.huge,
+    ReserveAmount = math.huge,
+    Modifiers = true,
+}
+
+-- ================== GUI ==================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "InfAmmoGUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = PlayerGui
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 280, 0, 130)
+MainFrame.Position = UDim2.new(0, 10, 0, 10)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.Parent = ScreenGui
+
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 35)
+Title.BackgroundTransparency = 1
+Title.Text = "∞ Infinite Ammo v7"
+Title.TextColor3 = Color3.fromRGB(0, 255, 150)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
+Title.Parent = MainFrame
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, 0, 0, 25)
+StatusLabel.Position = UDim2.new(0, 0, 0, 35)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Text = "Status: OFF"
+StatusLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+StatusLabel.TextScaled = true
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.Parent = MainFrame
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(1, -20, 0, 50)
+ToggleButton.Position = UDim2.new(0, 10, 0, 65)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleButton.Text = "TOGGLE (INSERT)"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextScaled = true
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Parent = MainFrame
+
+Instance.new("UICorner", ToggleButton).CornerRadius = UDim.new(0, 8)
+
+-- ================== FUNCTIONS (Giữ nguyên từ bản gốc) ==================
+local function isAmmoRelated(name)
+    local lower = name:lower()
+    local patterns = {"ammo", "clip", "magazine", "mag", "bullet", "round", "current"}
+    for _, pat in ipairs(patterns) do
+        if lower:find(pat) then return true end
+    end
+    return false
+end
+
+local function isReserveRelated(name)
+    local lower = name:lower()
+    return lower:find("reserve") or lower:find("stock") or lower:find("total")
+end
+
+local function applyModifier(obj)
+    local lower = obj.Name:lower()
+    if lower:find("recoil") or lower:find("spread") or lower:find("sway") or lower:find("bloom") then
+        obj.Value = 0
+    elseif lower:find("firerate") or lower:find("rof") then
+        obj.Value = math.max(obj.Value or 100, 1000)
+    elseif lower:find("delay") or lower:find("cooldown") then
+        obj.Value = 0.01
+    end
+end
+
+local function ModifyAmmo(tool)
+    pcall(function()
+        for _, obj in pairs(tool:GetDescendants()) do
+            if obj:IsA("IntValue") or obj:IsA("NumberValue") then
+                local name = obj.Name
+                if isAmmoRelated(name) then
+                    obj.Value = Settings.AmmoAmount + math.random(-2, 2)
+                elseif isReserveRelated(name) then
+                    obj.Value = Settings.ReserveAmount + math.random(-10, 10)
+                end
+            end
+        end
+        if Settings.Modifiers then
+            for _, obj in pairs(tool:GetDescendants()) do
+                if obj:IsA("IntValue") or obj:IsA("NumberValue") then
+                    applyModifier(obj)
+                end
+            end
+        end
+    end)
+end
+
+-- ================== MAIN LOOP ==================
+local HeartbeatConnection
+
+local function StartLoop()
+    if HeartbeatConnection then HeartbeatConnection:Disconnect() end
+    HeartbeatConnection = RunService.Heartbeat:Connect(function()
+        if not Settings.Enabled then return end
+        
+        local char = LocalPlayer.Character
+        if char then
+            local tool = char:FindFirstChildOfClass("Tool")
+            if tool then ModifyAmmo(tool) end
+        end
+        
+        for _, tool in pairs(LocalPlayer.Backpack:GetChildren()) do
+            if tool:IsA("Tool") then ModifyAmmo(tool) end
+        end
+    end)
+end
+
+local function StopLoop()
+    if HeartbeatConnection then
+        HeartbeatConnection:Disconnect()
+        HeartbeatConnection = nil
+    end
+end
+
+-- ================== TOGGLE ==================
+local function Toggle()
+    Settings.Enabled = not Settings.Enabled
+    if Settings.Enabled then
+        StartLoop()
+        StatusLabel.Text = "Status: ON (INF)"
+        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+        print("🟢 Infinite Ammo v7 ENABLED")
+    else
+        StopLoop()
+        StatusLabel.Text = "Status: OFF"
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        print("🔴 Infinite Ammo v7 DISABLED")
+    end
+end
+
+ToggleButton.MouseButton1Click:Connect(Toggle)
+
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.Insert then
+        Toggle()
+    end
+end)
+
+print("✅ AniPhobia v7 Loaded!")
+print("Mua súng → INSERT → Reset nhân vật")
