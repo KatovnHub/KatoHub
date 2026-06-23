@@ -50,25 +50,6 @@ LeTab:CreateButton({
     end
 })
 
-LeTab:CreateSection("🔧 Utility")
-LeTab:CreateButton({
-    Name = "⚙️ The Button",
-    Callback = function()
-        pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Bac0nHck/Scripts/refs/heads/main/TheButton.lua"))()
-        end)
-    end
-})
-
-LeTab:CreateButton({
-    Name = "🗂️ Dex Explorer",
-    Callback = function()
-        pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Babyhamsta/Rbx_Scripts/main/Dex%20Explorer.lua"))()
-        end)
-    end
-})
-
 -- ================== SCRIPT GAME ==================
 local GameTab = Window:CreateTab("Script Game", 0)
 
