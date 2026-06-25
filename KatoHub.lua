@@ -101,7 +101,7 @@ GameTab:CreateButton({
     Name = "🌡️ MTC V1.5",
     Callback = function()
         pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/KatovnHub/MTC/main/MTC_V1.5.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/KatovnHub/KatoHub/refs/heads/main/MTC%20Script.lua"))()
             Rayfield:Notify({Title = "MTC V1.5", Content = "Thermal ESP Loaded!", Duration = 5})
         end)
     end
