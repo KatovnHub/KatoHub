@@ -22,7 +22,7 @@ local LeTab = Window:CreateTab("Script Lẻ", 0)
 
 LeTab:CreateSection("🎯 FPS / Combat")
 LeTab:CreateButton({
-    Name = "🔫 Aim + ESP (KatovnHub)",
+    Name = "🔫 Aim + ESP (KatoHub)",
     Callback = function()
         pcall(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/KatovnHub/Universal-Roblox-Aim-ESP/main/script.lua"))()
