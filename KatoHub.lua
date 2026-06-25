@@ -31,6 +31,16 @@ LeTab:CreateButton({
     end
 })
 
+LeTab:CreateButton({
+    Name = "🔫 Aim (KatoHub)",
+    Callback = function()
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/KatovnHub/KatoHub/refs/heads/main/SAim%20Roblox.lua"))()
+            Rayfield:Notify({Title = "Loaded", Content = "Aim + ESP Activated!", Duration = 4})
+        end)
+    end
+})
+
 LeTab:CreateSection("⚡ Movement")
 LeTab:CreateButton({
     Name = "🕊 Fly GUI V3",
