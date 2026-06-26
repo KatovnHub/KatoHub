@@ -52,10 +52,10 @@ LeTab:CreateButton({
 })
 
 LeTab:CreateButton({
-    Name = "⚡ Speed + Infinite Yield",
+    Name = "⚡ Telleport Ctrl",
     Callback = function()
         pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/main/source"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/KatovnHub/KatoHub/refs/heads/main/Teleport%20Ctrl.lua"))()
         end)
     end
 })
