@@ -60,6 +60,15 @@ LeTab:CreateButton({
     end
 })
 
+LeTab:CreateButton({
+    Name = "🐱‍👤Ultimate Fling",
+    Callback = function()
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/K1LAS1K/Ultimate-Fling-GUI/main/flingscript.lua"))()
+        end)
+    end
+})
+
 -- ================== SCRIPT GAME ==================
 local GameTab = Window:CreateTab("Script Game", 0)
 
