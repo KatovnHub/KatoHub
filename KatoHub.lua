@@ -51,6 +51,15 @@ LeTab:CreateButton({
 })
 
 LeTab:CreateButton({
+    Name = "🚗Car Fly",
+    Callback = function()
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/KatovnHub/KatoHub/refs/heads/main/Car%20Fly.lua"))()
+        end)
+    end
+})
+
+LeTab:CreateButton({
     Name = "⚡ Telleport Ctrl",
     Callback = function()
         pcall(function()
