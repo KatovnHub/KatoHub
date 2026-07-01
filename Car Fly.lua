@@ -1,0 +1,208 @@
+--[[
+    FLYING CAR HUD SYSTEM (Standalone)
+]]
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+
+-- ================= CẤU HÌNH BIẾN =================
+getgenv().FlySpeed = 60       
+local SpeedStep = 15          
+local Flying = false
+local Root, BV, BG
+local Moving = {W = false, S = false, A = false, D = false, Space = false, LeftShift = false}
+
+-- ================= TẠO GIAO DIỆN CHÍNH =================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "FlyingCarMenu"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Bảng Menu
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 300, 0, 160) 
+MainFrame.Position = UDim2.new(0, 20, 0, 20)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
+
+local Title = Instance.new("TextLabel", MainFrame)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Text = "🚗 FLYING CAR MENU"
+Title.TextColor3 = Color3.fromRGB(0, 255, 150)
+Title.BackgroundTransparency = 1
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 20
+
+local function CreateToggleBtn(name, pos)
+    local btn = Instance.new("TextButton", MainFrame)
+    btn.Size = UDim2.new(1, -40, 0, 45)
+    btn.Position = pos
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+    return btn
+end
+
+local FlyBtn = CreateToggleBtn("FLYING CAR: OFF (E)", UDim2.new(0, 20, 0, 50)) 
+
+local Info = Instance.new("TextLabel", MainFrame)
+Info.Size = UDim2.new(1, 0, 0, 30)
+Info.Position = UDim2.new(0, 0, 0, 105) 
+Info.Text = "[INSERT] Ẩn/Hiện Menu | [T/Y] Tốc Độ"
+Info.TextColor3 = Color3.fromRGB(150, 150, 150)
+Info.BackgroundTransparency = 1
+Info.Font = Enum.Font.Gotham
+Info.TextSize = 12
+
+-- HUD Frame
+local HUDFrame = Instance.new("Frame", ScreenGui)
+HUDFrame.Size = UDim2.new(1, 0, 1, 0)
+HUDFrame.BackgroundTransparency = 1
+HUDFrame.Visible = false
+
+local function createLabel(name, text, pos, size, color)
+    local label = Instance.new("TextLabel", HUDFrame)
+    local stroke = Instance.new("UIStroke", label)
+    label.Name = name
+    label.Size = size
+    label.Position = pos
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = color or Color3.fromRGB(0, 255, 0)
+    label.Font = Enum.Font.Code
+    label.TextSize = 20
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    stroke.Thickness = 1.5
+    return label
+end
+
+local SpeedLabel = createLabel("SPD", "SPD: 000 KTS", UDim2.new(0.1, 0, 0.45, 0), UDim2.new(0, 200, 0, 30))
+local AltLabel = createLabel("ALT", "ALT: 00000 FT", UDim2.new(0.8, 0, 0.45, 0), UDim2.new(0, 200, 0, 30))
+local HdgLabel = createLabel("HDG", "HDG: 000°", UDim2.new(0.46, 0, 0.15, 0), UDim2.new(0, 150, 0, 30), Color3.fromRGB(255, 255, 0))
+local WarnLabel = createLabel("WARN", "", UDim2.new(0.4, 0, 0.7, 0), UDim2.new(0, 300, 0, 40), Color3.fromRGB(255, 0, 0))
+WarnLabel.TextSize = 28
+WarnLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+local function crossPart(size, pos)
+    local p = Instance.new("Frame", HUDFrame) p.Size = size p.Position = pos p.BackgroundColor3 = Color3.fromRGB(0, 255, 0) p.BorderSizePixel = 0
+end
+crossPart(UDim2.new(0, 40, 0, 2), UDim2.new(0.5, -20, 0.5, -1))
+crossPart(UDim2.new(0, 2, 0, 40), UDim2.new(0.5, -1, 0.5, -20))
+
+-- ================= LOGIC BAY & QUẢN LÝ RESPAWN =================
+local function SetupFlightPhysics()
+    Flying = false
+    HUDFrame.Visible = false
+    FlyBtn.Text = "FLYING CAR: OFF (E)"
+    FlyBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    
+    if BV then BV:Destroy() end
+    if BG then BG:Destroy() end
+    
+    local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    Root = Character:WaitForChild("HumanoidRootPart")
+    
+    BV = Instance.new("BodyVelocity") BV.maxForce = Vector3.new(0, 0, 0) BV.Parent = Root
+    BG = Instance.new("BodyGyro") BG.maxTorque = Vector3.new(0, 0, 0) BG.Parent = Root
+end
+
+local function ToggleFly()
+    if not Root or not BV or not BG then return end
+    Flying = not Flying
+    HUDFrame.Visible = Flying
+    if Flying then
+        BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+        BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+        FlyBtn.Text = "FLYING CAR: ON"
+        FlyBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        BV.maxForce = Vector3.new(0, 0, 0)
+        BG.maxTorque = Vector3.new(0, 0, 0)
+        FlyBtn.Text = "FLYING CAR: OFF (E)"
+        FlyBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    end
+end
+FlyBtn.MouseButton1Click:Connect(ToggleFly)
+
+-- ================= VÒNG LẶP CHÍNH =================
+RunService.RenderStepped:Connect(function()
+    -- Xử lý Bay và HUD
+    if Flying and Root and Root.Parent and BV and BG then
+        local CamCFrame = workspace.CurrentCamera.CFrame
+        local Dir = Vector3.new(0, 0, 0)
+        
+        if Moving.W then Dir = Dir + CamCFrame.LookVector end
+        if Moving.S then Dir = Dir - CamCFrame.LookVector end
+        if Moving.A then Dir = Dir - CamCFrame.RightVector end
+        if Moving.D then Dir = Dir + CamCFrame.RightVector end
+        if Moving.Space then Dir = Dir + Vector3.new(0, 1, 0) end
+        if Moving.LeftShift then Dir = Dir - Vector3.new(0, 1, 0) end
+        
+        if Dir.Magnitude > 0 then
+            BV.velocity = Dir.Unit * getgenv().FlySpeed
+            SpeedLabel.Text = string.format("SPD: %03d KTS", getgenv().FlySpeed)
+        else
+            BV.velocity = Vector3.new(0, 0, 0)
+            SpeedLabel.Text = "SPD: 000 STBY"
+        end
+        BG.cframe = CamCFrame
+        
+        local alt = math.floor(Root.Position.Y)
+        AltLabel.Text = string.format("ALT: %05d FT", alt)
+        
+        local lV = CamCFrame.LookVector
+        local hdg = math.floor(math.deg(math.atan2(-lV.X, -lV.Z)))
+        if hdg < 0 then hdg = hdg + 360 end
+        HdgLabel.Text = string.format("HDG: %03d°", hdg)
+        
+        if alt < 15 then WarnLabel.Text = "⚠️ TERRAIN! PULL UP! ⚠️"
+        elseif alt > 3000 then WarnLabel.Text = "⚠️ ALTITUDE! PULL DOWN ⚠️"
+        else WarnLabel.Text = "" end
+    end
+end)
+
+-- ================= SỰ KIỆN PHÍM BẤM =================
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if input.KeyCode == Enum.KeyCode.Insert then
+        MainFrame.Visible = not MainFrame.Visible
+    end
+    if gpe then return end
+    
+    local k = input.KeyCode
+    if k == Enum.KeyCode.E then ToggleFly()
+    elseif k == Enum.KeyCode.T then getgenv().FlySpeed = getgenv().FlySpeed + SpeedStep
+    elseif k == Enum.KeyCode.Y then getgenv().FlySpeed = math.max(15, getgenv().FlySpeed - SpeedStep)
+    elseif k == Enum.KeyCode.W then Moving.W = true
+    elseif k == Enum.KeyCode.S then Moving.S = true
+    elseif k == Enum.KeyCode.A then Moving.A = true
+    elseif k == Enum.KeyCode.D then Moving.D = true
+    elseif k == Enum.KeyCode.Space then Moving.Space = true
+    elseif k == Enum.KeyCode.LeftShift then Moving.LeftShift = true
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gpe)
+    local k = input.KeyCode
+    if k == Enum.KeyCode.W then Moving.W = false
+    elseif k == Enum.KeyCode.S then Moving.S = false
+    elseif k == Enum.KeyCode.A then Moving.A = false
+    elseif k == Enum.KeyCode.D then Moving.D = false
+    elseif k == Enum.KeyCode.Space then Moving.Space = false
+    elseif k == Enum.KeyCode.LeftShift then Moving.LeftShift = false
+    end
+end)
+
+-- Khởi tạo ban đầu
+SetupFlightPhysics()
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    SetupFlightPhysics()
+end)
