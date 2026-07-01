@@ -1,4 +1,3 @@
--- Tối ưu cho Solara
 if not game:IsLoaded() then game.Loaded:Wait() end
 task.wait(1)
 
@@ -17,8 +16,8 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false
 })
 
--- ================== SCRIPT LẺ (Universal) ==================
-local LeTab = Window:CreateTab("Script Lẻ", 0)
+-- ================== SCRIPTS (Universal) ==================
+local LeTab = Window:CreateTab("Scripts", 0)
 
 LeTab:CreateSection("🎯 FPS / Combat")
 LeTab:CreateButton({
